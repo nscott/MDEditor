@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>MD Editor</title>
+        <script src="./node_modules/markdown/lib/markdown.js"></script>
+        <script>
+         var updatePreview = function(loadFromStorage) {
+             var mdEditorLSKey = 'mdEditor_mdContent';
+             var mdInputId = 'markdown_input';
+             var mdInput = document.getElementById(mdInputId);
+             var localStorage = window.localStorage;
+             if ( loadFromStorage ) {
+                 // restore from cache
+                 mdContent = localStorage.getItem(mdEditorLSKey);
+                 document.getElementById(mdInputId).value = mdContent;
+             } else {
+                 localStorage.setItem(mdEditorLSKey, document.getElementById(mdInputId).value);
+             }
+             var previewBody = document.getElementById('preview');
+             
+             // Check if the mouse is over the markdown area so a user can select text and copy
+             // Otherwise updating the HTML removes the selection
+             var elementsHoveredOn = document.querySelectorAll(":hover");
+             var hoveringOnRenderArea = false;
+             for ( var i = 0; i < elementsHoveredOn.length && !hoveringOnRenderArea; i++ ) {
+                if ( elementsHoveredOn[i] == previewBody ) {
+                    hoveringOnRenderArea = true;
+                }
+             }
+             
+             if ( !hoveringOnRenderArea ) {
+                previewBody.innerHTML = markdown.toHTML(document.getElementById(mdInputId).value);
+             }
+         };
+        </script>
+        <style>
+         html, body {
+             font-family: Verdana, Arial, sans-serif;
+             font-size: 12pt;
+             padding: 0 0 0 0;
+             margin: 0 0 0 0;
+             width: 100%;
+             height: 98%;
+             background-color: #002b36;
+             color: #073642;
+         }
+
+         div {
+             margin: 0px 0px 0px 0px;
+         }
+
+         div.editor {
+             float: left;
+             width: 40%;
+             height: 100%;
+             border-right: 1px solid black;
+             background-color: #eee8d5;
+         }
+
+         div.preview {
+             float: left;
+             width: 59%;
+             min-height: 100%;
+             color: #586e75;
+             background-color: #eee8d5;
+             height: 100%;
+             overflow-y: scroll;
+         }
+
+         div.header {
+             color: #2aa198;
+             padding-left: 10;
+             padding-right: 10;
+             margin: 0px 0px 0px 0px;
+         }
+
+         textarea.editor {
+             width: 99%;
+             height: 99%;
+             background-color: #fdf6e3;
+             border: 1px solid #839496;
+         }
+
+         h1, h2 {
+             margin: 0 0 0 0;
+         }
+        </style>
+    </head>
+    <body>
+        <div class="header">
+            <h1>MD Editor</h1>
+        </div>
+        <div class="editor">
+            <textarea id="markdown_input" oninput="updatePreview(false);" class="editor"></textarea>
+        </div>
+        <div class="preview">
+            <div id="preview">Type in the box on the left to add content</div>
+        </div>
+    </body>
+    <script>
+     updatePreview(true);
+     // this makes sure that all MD Editor tabs are synced
+     var backgroundRefresh = setInterval(updatePreview, 1000, true);
+    </script>
+</html>
